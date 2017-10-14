@@ -1,5 +1,4 @@
 const db = require('../db').users;
-const assertTemplate = require('../libs/assertTemplate');
 const config = require('config');
 const jwt = require('jwt-simple');
 const passport = require('koa-passport');
@@ -15,14 +14,15 @@ const tokenForUser = user => {
 
 exports.signUp = async function(ctx, next) {
   const userInfo = ctx.request.body;
-  const existingUser = await db.findByEmail(userInfo.email);
-
-  if (existingUser) ctx.throw(400, 'User aready exists');
 
   try {
-    const validatedData = await db.validate(userInfo);
+    const existingUser = await db.findByEmail(userInfo.email);
 
-    const user = await db.create(validatedData);
+    if (existingUser) {
+      ctx.throw(400, 'User with this email aready exists');
+    }
+
+    const user = await db.create(userInfo);
     const token = tokenForUser(user);
 
     ctx.body = {
@@ -32,9 +32,11 @@ exports.signUp = async function(ctx, next) {
   } catch (error) {
     if (error.isJoi) {
       ctx.throw(400, error.message);
+    } else if (error.name === 'BadRequestError') {
+      ctx.throw(error);
+    } else {
+      ctx.throw(500);
     }
-
-    ctx.throw(500);
   }
 };
 

@@ -22,7 +22,9 @@ function sql(file) {
 module.exports = {
   users: {
     create: sql('users/create.sql'),
+    delete: sql('users/delete.sql'),
     empty: sql('users/empty.sql'),
+    findAll: sql('users/findAll.sql'),
     findById: sql('users/findById.sql'),
     findByEmail: sql('users/findByEmail.sql'),
     hashByEmail: sql('users/hashByEmail.sql'),
