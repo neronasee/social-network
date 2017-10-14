@@ -75,8 +75,3 @@ exports.delete = async function(ctx, next) {
     ctx.throw(500);
   }
 };
-
-// return {
-//   where: conditions.length ? 'WHERE ' + conditions.join(' AND ').concat(' LIMIT ? OFFSET ?') : ' LIMIT ? OFFSET ?',
-//   values: values.concat(Number(limit), Number(offset)),
-// };

@@ -230,15 +230,13 @@ describe('User Interactions', () => {
     });
     context('user doesnt exist', () => {
       it('returns 404', async function() {
-        it('returns 200', async function() {
-          const response = await request({
-            method: 'DELETE',
-            url: `${ROOT_URL}/users/${existingUser.id + 1}`,
-            timeout: 500,
-          });
-
-          response.statusCode.should.eql(404);
+        const response = await request({
+          method: 'DELETE',
+          url: `${ROOT_URL}/users/${existingUser.id + 1}`,
+          timeout: 500,
         });
+
+        response.statusCode.should.eql(404);
       });
     });
   });
