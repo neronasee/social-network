@@ -115,7 +115,7 @@ describe('User Interactions', () => {
           body: existingUserData,
         });
 
-        response.statusCode.should.eql(409);
+        response.statusCode.should.eql(400);
       });
     });
   });

@@ -15,35 +15,26 @@ const tokenForUser = user => {
 
 exports.signUp = async function(ctx, next) {
   const userInfo = ctx.request.body;
-  const template = [
-    'firstname',
-    'lastname',
-    'birthdate',
-    'phone',
-    'gender',
-    'city_id',
-    'password',
-    'email',
-  ];
-
-  const isValid = assertTemplate(template, userInfo);
-
-  if (!isValid) ctx.throw(422, 'Provide all data needed');
-
   const existingUser = await db.findByEmail(userInfo.email);
 
-  if (existingUser) ctx.throw(409, 'User aready exists');
+  if (existingUser) ctx.throw(400, 'User aready exists');
 
   try {
-    const user = await db.create(userInfo);
+    const validatedData = await db.validate(userInfo);
+
+    const user = await db.create(validatedData);
     const token = tokenForUser(user);
 
     ctx.body = {
       user,
       token,
     };
-  } catch (e) {
-    ctx.throw(400, 'Provide proper data');
+  } catch (error) {
+    if (error.isJoi) {
+      ctx.throw(400, error.message);
+    }
+
+    ctx.throw(500);
   }
 };
 
