@@ -1,4 +1,5 @@
-const db = require('../db').users;
+const db = require('../db').groups;
+const config = require('config');
 const _ = {
   isEmpty: require('lodash/isempty'),
 };
@@ -7,17 +8,22 @@ exports.getSingle = async function(ctx, next) {
   const { id } = ctx.params;
 
   try {
-    const user = await db.findById(id);
+    const group = await db.findById(id);
 
-    if (!user) {
-      ctx.throw(404, 'User not found');
+    if (!group) {
+      ctx.throw(404, 'Group not found');
     }
 
-    ctx.body = { data: user };
+    const populatedInfo = Object.assign({}, group, {
+      owner: `${config.get('rootUrl')}/users/${group.owner_id}`,
+    });
+
+    ctx.body = { data: populatedInfo };
   } catch (error) {
     if (error.name === 'NotFoundError') {
       ctx.throw(error);
     }
+
     ctx.throw(500);
   }
 };
@@ -26,10 +32,25 @@ exports.getAll = async function(ctx, next) {
   const { offset = 0, limit = 50 } = ctx.request.query;
 
   try {
-    const users = await db.findAll(offset, limit);
+    const groups = await db.findAll(offset, limit);
 
-    ctx.body = { data: users };
+    ctx.body = { data: groups };
   } catch (error) {
+    ctx.throw(500);
+  }
+};
+
+exports.create = async function(ctx, next) {
+  const groupInfo = ctx.request.body;
+
+  try {
+    const group = await db.create(groupInfo);
+
+    ctx.body = { data: group };
+  } catch (error) {
+    if (error.isJoi) {
+      ctx.throw(400, error.message);
+    }
     ctx.throw(500);
   }
 };
@@ -43,7 +64,7 @@ exports.update = async function(ctx, next) {
     const result = await db.update(ctx.params.id, ctx.request.body);
 
     if (!result.rowCount) {
-      ctx.throw(404, 'User not found');
+      ctx.throw(404, 'Group not found');
     }
 
     ctx.body = 'OK';
@@ -56,7 +77,6 @@ exports.update = async function(ctx, next) {
       ctx.throw(500);
     }
   }
-  // TODO: write case for password resaving with hashing
 };
 
 exports.delete = async function(ctx, next) {
@@ -64,7 +84,7 @@ exports.delete = async function(ctx, next) {
     const result = await db.delete(ctx.params.id);
 
     if (!result.rowCount) {
-      ctx.throw(404, 'User not found');
+      ctx.throw(404, 'Group not found');
     }
 
     ctx.body = 'OK';

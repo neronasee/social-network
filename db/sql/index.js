@@ -29,4 +29,11 @@ module.exports = {
     findByEmail: sql('users/findByEmail.sql'),
     hashByEmail: sql('users/hashByEmail.sql'),
   },
+  groups: {
+    findById: sql('groups/findById.sql'),
+    findAll: sql('groups/findAll.sql'),
+    create: sql('groups/create.sql'),
+    delete: sql('groups/delete.sql'),
+    empty: sql('groups/empty.sql'),
+  },
 };

@@ -2,11 +2,13 @@ const config = require('config');
 
 const repos = {
   Users: require('./repos/users'),
+  Groups: require('./repos/groups'),
 };
 
 const initOptions = {
   extend: obj => {
     obj.users = new repos.Users(obj, pgp);
+    obj.groups = new repos.Groups(obj, pgp);
   },
 };
 
