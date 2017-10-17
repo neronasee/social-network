@@ -49,5 +49,17 @@ class GroupsRepository {
   empty() {
     return this.db.none(sql.empty);
   }
+
+  getUsers(userId) {
+    return this.db.any(sql.getUsers, userId);
+  }
+
+  addUserToGroup(userId, groupId) {
+    return this.db.result(sql.addUserToGroup, { user_id: userId, group_id: groupId });
+  }
+
+  deleteUserFromGroup(userId, groupId) {
+    return this.db.result(sql.deleteUserFromGrouo, { user_id: userId, group_id: groupId });
+  }
 }
 module.exports = GroupsRepository;

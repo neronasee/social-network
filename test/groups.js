@@ -91,6 +91,31 @@ describe('Group Interactions', () => {
     });
   });
 
+  describe('DELETE /groups/:id', () => {
+    context('group exists', () => {
+      it('returns 200', async function() {
+        const response = await request({
+          method: 'DELETE',
+          url: `${ROOT_URL}/groups/${existingGroup.id}`,
+          timeout: 500,
+        });
+
+        response.statusCode.should.eql(200);
+      });
+    });
+    context('group doesnt exist', () => {
+      it('returns 404', async function() {
+        const response = await request({
+          method: 'DELETE',
+          url: `${ROOT_URL}/groups/${existingGroup.id + 1}`,
+          timeout: 500,
+        });
+
+        response.statusCode.should.eql(404);
+      });
+    });
+  });
+
   describe('POST /groups', () => {
     it('creates group and returns it', async function() {
       const response = await request({
@@ -155,31 +180,6 @@ describe('Group Interactions', () => {
         });
 
         updatedResponse.body.data.name.should.eql(validDataForUpdate.name);
-      });
-    });
-  });
-
-  describe('DELETE /groups/:id', () => {
-    context('group exists', () => {
-      it('returns 200', async function() {
-        const response = await request({
-          method: 'DELETE',
-          url: `${ROOT_URL}/groups/${existingGroup.id}`,
-          timeout: 500,
-        });
-
-        response.statusCode.should.eql(200);
-      });
-    });
-    context('group doesnt exist', () => {
-      it('returns 404', async function() {
-        const response = await request({
-          method: 'DELETE',
-          url: `${ROOT_URL}/groups/${existingGroup.id + 1}`,
-          timeout: 500,
-        });
-
-        response.statusCode.should.eql(404);
       });
     });
   });

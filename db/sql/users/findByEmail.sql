@@ -5,7 +5,6 @@ SELECT
   users.lastname,
   users.phone,
   users.gender,
-  users.city_id,
   users.birthdate,
   cities.name AS city
 

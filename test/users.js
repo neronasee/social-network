@@ -228,11 +228,41 @@ describe('User Interactions', () => {
         response.statusCode.should.eql(200);
       });
     });
+
     context('user doesnt exist', () => {
       it('returns 404', async function() {
         const response = await request({
           method: 'DELETE',
           url: `${ROOT_URL}/users/${existingUser.id + 1}`,
+          timeout: 500,
+        });
+
+        response.statusCode.should.eql(404);
+      });
+    });
+  });
+
+  describe('GET /users/:id/groups', () => {
+    context('user exists', () => {
+      it('returns the list of groups', async function() {
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}//users/:id/groups`,
+          timeout: 500,
+          json: true,
+        });
+
+        response.body.data.should.have.length(1);
+        response.statusCode.should.eql(200);
+        response.headers['content-type'].should.match(/application\/json/);
+      });
+    });
+
+    context('user doesnt exist', () => {
+      it('returs 404', async function() {
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}/users/:id/groups`,
           timeout: 500,
         });
 

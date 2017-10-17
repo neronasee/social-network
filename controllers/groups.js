@@ -7,6 +7,10 @@ const _ = {
 exports.getSingle = async function(ctx, next) {
   const { id } = ctx.params;
 
+  if (!Number.isInteger(+id)) {
+    ctx.throw(400, 'Provide proper id');
+  }
+
   try {
     const group = await db.findById(id);
 
@@ -85,6 +89,77 @@ exports.delete = async function(ctx, next) {
 
     if (!result.rowCount) {
       ctx.throw(404, 'Group not found');
+    }
+
+    ctx.body = 'OK';
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      ctx.throw(error);
+    }
+    ctx.throw(500);
+  }
+};
+
+exports.getUsers = async function(ctx, next) {
+  const { id } = ctx.params;
+
+  if (!Number.isInteger(+id)) {
+    ctx.throw(400, 'Provide proper id');
+  }
+
+  try {
+    const groups = await db.getUsers(id);
+
+    if (!groups.length) {
+      ctx.throw(404, 'No users or group doesnt exist');
+    }
+
+    ctx.body = { data: groups };
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      ctx.throw(error);
+    }
+    console.log(error);
+    ctx.throw(500);
+  }
+};
+
+exports.addUserToGroup = async function(ctx, next) {
+  const { userId, groupId } = ctx.params;
+
+  if (!Number.isInteger(+userId) || !Number.isInteger(+groupId)) {
+    ctx.throw(400, 'Provide proper ids');
+  }
+
+  try {
+    await db.addUserToGroup(userId, groupId);
+
+    ctx.body = 'OK';
+  } catch (error) {
+    // code of foreign key violating (key is not present in corresponding table)
+    if (error.code === '23503') {
+      ctx.throw(404, 'User or group doesnt exist');
+    }
+    // already a member
+    if (error.code === '23505') {
+      ctx.throw(400, 'Already a member');
+    }
+    ctx.throw(500);
+  }
+};
+
+exports.deleteUserFromGroup = async function(ctx, next) {
+  const { userId, groupId } = ctx.params;
+
+  if (!Number.isInteger(+userId) || !Number.isInteger(+groupId)) {
+    ctx.throw(400, 'Provide proper ids');
+  }
+
+  try {
+    const result = await db.deleteUserFromGroup(userId, groupId);
+
+    if (!result.rowCount) {
+      ctx.throw(404, 'User/Group not found or they are not related to each other');
     }
 
     ctx.body = 'OK';

@@ -2,9 +2,14 @@ const db = require('../db').users;
 const _ = {
   isEmpty: require('lodash/isempty'),
 };
+const config = require('config');
 
 exports.getSingle = async function(ctx, next) {
   const { id } = ctx.params;
+
+  if (!Number.isInteger(+id)) {
+    ctx.throw(400, 'Provide proper id');
+  }
 
   try {
     const user = await db.findById(id);
@@ -68,6 +73,35 @@ exports.delete = async function(ctx, next) {
     }
 
     ctx.body = 'OK';
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      ctx.throw(error);
+    }
+    ctx.throw(500);
+  }
+};
+
+exports.getUserGroups = async function(ctx, next) {
+  const { id } = ctx.params;
+
+  if (!Number.isInteger(+id)) {
+    ctx.throw(400, 'Provide proper id');
+  }
+
+  try {
+    const groups = await db.getGroups(id);
+
+    if (!groups.length) {
+      ctx.throw(404, 'No groups or user doesnt exist');
+    }
+
+    const populatedInfo = groups.map(group => {
+      return Object.assign({}, group, {
+        owner: `${config.get('rootUrl')}/users/${group.owner_id}`,
+      });
+    });
+
+    ctx.body = { data: populatedInfo };
   } catch (error) {
     if (error.name === 'NotFoundError') {
       ctx.throw(error);

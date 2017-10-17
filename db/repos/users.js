@@ -91,5 +91,9 @@ class UsersRepository {
   _getPasswordHash(email) {
     return this.db.oneOrNone(sql.hashByEmail, email);
   }
+
+  getGroups(userId) {
+    return this.db.any(sql.getGroups, userId);
+  }
 }
 module.exports = UsersRepository;

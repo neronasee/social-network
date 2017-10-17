@@ -14,11 +14,17 @@ router.patch('/users/:id', usersCtrl.update);
 router.delete('/users/:id', usersCtrl.delete);
 
 router.get('/groups', groupsCtrl.getAll);
-router.post('/groups', groupsCtrl.create);
 router.get('/groups/:id', groupsCtrl.getSingle);
+router.post('/groups', groupsCtrl.create);
 router.patch('/groups/:id', groupsCtrl.update);
 router.delete('/groups/:id', groupsCtrl.delete);
 
+router.get('/users/:id/groups', usersCtrl.getUserGroups);
+router.get('/groups/:id/users', groupsCtrl.getUsers);
+
+router.put('/groups/:groupId/users/:userId', groupsCtrl.addUserToGroup);
+router.delete('/groups/:groupId/users/:userId', groupsCtrl.deleteUserFromGroup);
+// DELETE users/:userId/groups/:groupId -> unmember (protected)
 // TODO: delete test route
 // TODO: create secure route for single user requests
 router.get('/', private, async (ctx, next) => {

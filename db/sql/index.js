@@ -28,6 +28,7 @@ module.exports = {
     findById: sql('users/findById.sql'),
     findByEmail: sql('users/findByEmail.sql'),
     hashByEmail: sql('users/hashByEmail.sql'),
+    getGroups: sql('users/getGroups.sql'),
   },
   groups: {
     findById: sql('groups/findById.sql'),
@@ -35,5 +36,8 @@ module.exports = {
     create: sql('groups/create.sql'),
     delete: sql('groups/delete.sql'),
     empty: sql('groups/empty.sql'),
+    getUsers: sql('groups/getUsers.sql'),
+    addUserToGroup: sql('groups/addUserToGroup.sql'),
+    deleteUserFromGrouo: sql('groups/deleteUserFromGroup.sql'),
   },
 };
