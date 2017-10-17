@@ -46,6 +46,7 @@ describe('Group Interactions', () => {
     await db.groups.empty();
 
     existingGroup = await db.groups.create(existingGroupData);
+    await db.groups.addUserToGroup(existingUser.id, existingGroup.id);
   });
 
   describe('GET /groups', () => {
@@ -180,6 +181,120 @@ describe('Group Interactions', () => {
         });
 
         updatedResponse.body.data.name.should.eql(validDataForUpdate.name);
+      });
+    });
+  });
+
+  describe('PUT /groups/:groupId/users/:userId', () => {
+    it('adds a new member to the group', async function() {
+      await request({
+        method: 'PUT',
+        url: `${ROOT_URL}/groups/${existingGroup.id}/users/${existingUser.id}`,
+        timeout: 500,
+        json: true,
+      });
+
+      const response = await request({
+        method: 'GET',
+        url: `${ROOT_URL}/users/${existingUser.id}/groups`,
+        timeout: 500,
+        json: true,
+      });
+
+      response.body.data.should.have.length(2);
+      response.statusCode.should.eql(200);
+      response.headers['content-type'].should.match(/application\/json/);
+    });
+  });
+
+  describe('DELETE /groups/:groupId/users/:userId', () => {
+    context('group and user exist', () => {
+      it('returns 200 and anything after deleting', async function() {
+        const deleteResponse = await request({
+          method: 'DELETE',
+          url: `${ROOT_URL}/groups/${existingGroup.id}/users/${existingUser.id}`,
+          timeout: 500,
+        });
+
+        deleteResponse.statusCode.should.eql(200);
+
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}/users/${existingUser.id}/groups`,
+          timeout: 500,
+          json: true,
+        });
+
+        response.statusCode.should.eql(404);
+      });
+    });
+    context('group or user dont exist', () => {
+      it('returns 404', async function() {
+        const response = await request({
+          method: 'DELETE',
+          url: `${ROOT_URL}/groups/${existingGroup.id + 1}/users/${existingUser.id}`,
+          timeout: 500,
+        });
+
+        response.statusCode.should.eql(404);
+      });
+    });
+  });
+
+  describe('GET /users/:id/groups', () => {
+    context('relation exists', () => {
+      it('returns the list of groups', async function() {
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}/users/${existingUser.id}/groups`,
+          timeout: 500,
+          json: true,
+        });
+
+        response.body.data.should.have.length(1);
+        response.statusCode.should.eql(200);
+        response.headers['content-type'].should.match(/application\/json/);
+      });
+    });
+
+    context('relation doesnt exist', () => {
+      it('returs 404', async function() {
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}/users/${existingUser.id + 1}/groups`,
+          timeout: 500,
+        });
+
+        response.statusCode.should.eql(404);
+      });
+    });
+  });
+
+  describe('GET /groups/:id/users', () => {
+    context('relation exists', () => {
+      it('returns the list of groups', async function() {
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}/groups/${existingGroup.id}/users`,
+          timeout: 500,
+          json: true,
+        });
+
+        response.body.data.should.have.length(1);
+        response.statusCode.should.eql(200);
+        response.headers['content-type'].should.match(/application\/json/);
+      });
+    });
+
+    context('relation doesnt exist', () => {
+      it('returs 404', async function() {
+        const response = await request({
+          method: 'GET',
+          url: `${ROOT_URL}/groups/${existingGroup.id + 1}/users`,
+          timeout: 500,
+        });
+
+        response.statusCode.should.eql(404);
       });
     });
   });
