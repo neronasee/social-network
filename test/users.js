@@ -17,7 +17,7 @@ describe('User Interactions', () => {
     birthdate: '1820-12-12',
     phone: '123',
     gender: '2',
-    city_id: '205',
+    city_id: '1',
     password: '123',
     email: 'test@gmail.com',
   };
@@ -28,7 +28,7 @@ describe('User Interactions', () => {
     birthdate: '1820-12-12',
     phone: '456',
     gender: '2',
-    city_id: '205',
+    city_id: '1',
     password: '123',
     email: 'test2@gmail.com',
   };

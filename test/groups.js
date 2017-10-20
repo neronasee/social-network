@@ -14,6 +14,17 @@ describe('Group Interactions', () => {
   let existingGroup;
   let existingUser;
 
+  const existingUserData = {
+    firstname: 'testname',
+    lastname: 'testlastname',
+    birthdate: '1820-12-12',
+    phone: '123',
+    gender: '2',
+    city_id: '1',
+    password: '123',
+    email: 'test@gmail.com',
+  };
+
   const existingGroupData = {
     name: 'testGroup',
     description: 'testDescription',
@@ -31,10 +42,6 @@ describe('Group Interactions', () => {
   };
 
   before(done => {
-    db.users.findAll().then(response => {
-      existingUser = response[0];
-    });
-
     server = app.listen(config.get('testPort'), done);
   });
 
@@ -44,6 +51,8 @@ describe('Group Interactions', () => {
 
   beforeEach(async function() {
     await db.groups.empty();
+    await db.users.empty();
+    existingUser = await db.users.create(existingUserData);
 
     existingGroup = await db.groups.create(existingGroupData);
     await db.groups.addUserToGroup(existingUser.id, existingGroup.id);
@@ -187,9 +196,16 @@ describe('Group Interactions', () => {
 
   describe('PUT /groups/:groupId/users/:userId', () => {
     it('adds a new member to the group', async function() {
+      const newGroup = await request({
+        method: 'post',
+        url: `${ROOT_URL}/groups`,
+        json: true,
+        body: newGroupData,
+      });
+
       await request({
         method: 'PUT',
-        url: `${ROOT_URL}/groups/${existingGroup.id}/users/${existingUser.id}`,
+        url: `${ROOT_URL}/groups/${newGroup.body.data.id}/users/${existingUser.id}`,
         timeout: 500,
         json: true,
       });

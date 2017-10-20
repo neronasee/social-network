@@ -8,7 +8,7 @@ module.exports = {
     dbHost: 'localhost',
     dbPort: '5432',
     database: 'social_network',
-    dbUser: 'postgres',
+    dbUser: 'dev',
   },
 };
 // TODO: move secret and rootUrl to env var on prod server

@@ -4,6 +4,6 @@ module.exports = {
     dbHost: 'localhost',
     dbPort: '5432',
     database: 'social_network_test',
-    dbUser: 'postgres',
+    dbUser: 'dev',
   },
 };
